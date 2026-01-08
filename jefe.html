@@ -68,10 +68,35 @@
     padding: 12px;
     text-align: center;
   }
+ /*boton de cierre sesion*/
+    .btn.logout {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.6s ease;
+  }
+
+  .btn.logout.enviando {
+    transform: rotateY(360deg); /* giro coqueto */
+  }
+
+
+
+
   </style>
 </head>
 <body>
-  <header>🔧 Jefe de Mecánicos</header>
+  
+      <header style="display: flex;justify-content: space-between ;"> 
+        <span>🔧 Jefe de Mecánicos</span>
+        <button class="btn logout" id="btnLogout">🚪 Cerrar sesión </button>
+      </header>
+
+  
   <div class="content">
     <h3>Tareas asignadas</h3>
     <div id="lista"></div>
@@ -162,6 +187,31 @@
         cont.appendChild(div);
       });
     }
+    btnLogout.addEventListener("click", async () => {
+            btnLogout.classList.add("enviando");
+            btnLogout.innerText = "👋 Hasta pronto…";
+
+            // Simular proceso de logout (ej: limpiar localStorage, redirigir)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            localStorage.removeItem("rol");
+            localStorage.removeItem("tareasSheet");
+            window.location.href = "index.html"
+            btnLogout.innerText = "🚪 Cerrar sesión";
+            btnLogout.classList.remove("enviando");
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     cargarTareas();
     setInterval(cargarTareas, 1800000); // refresca cada 30 minutos
