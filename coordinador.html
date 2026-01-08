@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coordinador</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #f5f0ff, #e6dfff);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #6a4fcf;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .task-form {
+      background: #d9caff;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .task-form input, .task-form select {
+      width: 95%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      border: none;
+    }
+   /* .task-form button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #6a4fcf;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }*/
+    .task-list h3 {
+      color: #6a4fcf;
+    }
+    .task {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .priority {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #fff;
+    }
+    .alta { background: #ff6b6b; }
+    .media { background: #ffd93d; color:#333; }
+    .baja { background: #6bcf6a; }
+
+    /* Estilos del botón con efecto de giro */
+    .btn {
+      background: #6a4fcf;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      perspective: 1000px; /* necesario para efecto 3D */
+    }
+
+    .btn span {
+      display: inline-block;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .btn.enviando span {
+      transform: rotateY(180deg);
+    }
+
+    /* Caras del botón */
+    .front, .back {
+      position: absolute;
+      width: 100%;
+      backface-visibility: hidden;
+    }
+    .back {
+      transform: rotateY(180deg);
+    }
+
+    /*boton de cierre sesion*/
+    .btn.logout {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.6s ease;
+  }
+
+  .btn.logout.enviando {
+    transform: rotateY(360deg); /* giro coqueto */
+  }
+
+footer {
+    background: #6a4fcf;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+  }
+
+
+  </style>
+</head>
+<body>
+    <header style="display: flex;justify-content: space-between ;"> 
+        <span>⚙️ Coordinador</span>
+        <button class="btn logout" id="btnLogout">🚪 Cerrar sesión </button>
+    </header>
+        <div class="content">
+        <!-- Formulario para crear tarea -->
+        <div class="task-form">
+      <input type="text" id="titulo" placeholder="Título de la tarea">
+      <input type="text" id="descripcion" placeholder="Descripción">
+      <select id="prioridad">
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+      
+      
+      <!--button onclick="crearTarea()">➕ Crear tarea</button-->
+    
+      <!--boton con etsilo de giro-->
+      <button class="btn" id="miBoton" > enviar
+        <span>
+        <span class="front" >➕</span>
+        <span class="back" >⏳</span>
+        </span>
+     </button>
+    
+    
+    
+    
+    
+    
+    </div>
+
+    <!-- Lista de tareas pendientes -->
+    <div class="task-list">
+      <h3>Tareas pendientes</h3>
+      <div id="lista"></div>
+    </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4mWo1zod9QAl81fauv6OPUFTKSJZ7pvbNoUEpU8HSybPg65no4TaqP-i11MezR4Pc3g/exec"; // pega aquí la URL del Apps Script publicado
+        // crear tarea
+        async function crearTarea() {
+            const titulo = document.getElementById("titulo").value;
+            const descripcion = document.getElementById("descripcion").value;
+            const prioridad = document.getElementById("prioridad").value;
+
+            if (!titulo || !descripcion) return;
+
+            const res = await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                tipo: "crear",       
+                titulo,
+                descripcion,
+                    prioridad
+                })
+            });
+            const data = await res.json();
+            console.log("Respuesta:", data);
+            // limpiar campos
+            document.getElementById("titulo").value = "";
+            document.getElementById("descripcion").value = "";
+
+            // refrescar lista
+            cargarTareas();
+        }
+        const boton = document.getElementById("miBoton");
+
+        boton.addEventListener("click", async () => {
+       
+        // activar animación
+        console.log("boton presionado");
+        boton.classList.add("enviando");
+     
+        document.getElementById("miBoton").disabled = true;
+        // simular envío (ej: fetch al Apps Script)
+        crearTarea();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        
+        document.getElementById("miBoton").disabled = false;
+      
+        // volver al estado original
+        boton.classList.remove("enviando");
+        });
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+     // cargar tareas
+        async function cargarTareas() {
+            const res = await fetch(SCRIPT_URL + "?tipo=coordinador");
+            const tareas = await res.json();
+
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
+
+            // Pendientes
+            const pendientes = tareas.filter(t => t.estado === "pendiente");
+            if (pendientes.length > 0) {
+                const h3 = document.createElement("h3");
+                h3.textContent = "Pendientes";
+                lista.appendChild(h3);
+                pendientes.forEach(t => {
+                    const div = document.createElement("div");
+                    div.className = "task";
+                    div.innerHTML = `<span>${t.titulo} - ${t.descripcion}</span>
+                    <span class="priority ${t.prioridad.toLowerCase()}">${t.prioridad}</span>`;
+                    lista.appendChild(div);
+                });
+            }
+
+            // En curso
+            const enCurso = tareas.filter(t => t.estado === "en curso");
+            if (enCurso.length > 0) {
+                const h3 = document.createElement("h3");
+                h3.textContent = "En curso";
+                lista.appendChild(h3);
+                enCurso.forEach(t => {
+                    const div = document.createElement("div");
+                    div.className = "task";
+                    div.innerHTML = `<span>${t.titulo} - ${t.descripcion} → ${t.mecanico}</span>
+                    <span class="priority ${t.prioridad.toLowerCase()}">${t.prioridad}</span>`;
+                    lista.appendChild(div);
+                });
+            }
+        }
+        //efecto boton cierre sesion
+        const btnLogout = document.getElementById("btnLogout");
+
+        btnLogout.addEventListener("click", async () => {
+            btnLogout.classList.add("enviando");
+            btnLogout.innerText = "👋 Hasta pronto…";
+
+            // Simular proceso de logout (ej: limpiar localStorage, redirigir)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            localStorage.removeItem("rol");
+            localStorage.removeItem("tareasSheet");
+            window.location.href = "index.html"
+            btnLogout.innerText = "🚪 Cerrar sesión";
+            btnLogout.classList.remove("enviando");
+        });
+
+        const inputTitulo = document.getElementById('titulo');
+        const inputDescripcion =document.getElementById('descripcion')
+        inputTitulo.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+        });
+        inputDescripcion.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+        });
+
+
+
+        //activar carga inicial y cada 30 minutos
+        cargarTareas();
+        setInterval(cargarTareas, 1800000); // refresca cada 30 minutos
+    </script>
+    <footer>
+        JoulesBI Solutions © 2026
+    </footer>
+
+
+</body>
+</html>

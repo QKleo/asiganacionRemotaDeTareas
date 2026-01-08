@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Asignaciones</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #f5f0ff, #e6dfff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: #d9caff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    h2 {
+      text-align: center;
+      color: #6a4fcf;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #6a4fcf;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      text-align: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>🔧 Iniciar sesión</h2>
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="clave" placeholder="Contraseña">
+    <button onclick="login()">Ingresar</button>
+    <div class="error" id="error"></div>
+  </div>
+
+  <script>
+    // Redirección automática si ya está logeado
+    const rolGuardado = localStorage.getItem("rol");
+    if (rolGuardado === "coordinador") window.location.href = "coordinador.html";
+    if (rolGuardado === "jefe") window.location.href = "jefe.html";
+
+    function login() {
+      const usuario = document.getElementById("usuario").value.toLowerCase();
+      const clave = document.getElementById("clave").value;
+      const error = document.getElementById("error");
+
+      if ((usuario === "coordinador" || usuario === "jefe") && clave === "123") {
+        localStorage.setItem("rol", usuario);
+        window.location.href = usuario + ".html"; // redirige a coordinador.html o jefe.html
+      } else {
+        error.textContent = "Usuario o contraseña incorrectos";
+      }
+    }
+  </script>
+</body>
+</html>

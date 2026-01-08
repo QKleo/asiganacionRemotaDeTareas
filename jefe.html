@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jefe de Mecánicos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #f5f0ff, #e6dfff);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #6a4fcf;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .task {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .task h4 {
+      margin: 0 0 5px 0;
+      color: #6a4fcf;
+    }
+    .task select, .task button {
+      margin-top: 5px;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+    }
+    .task button {
+      background: #6a4fcf;
+      color: #fff;
+      cursor: pointer;
+    }
+    .estado {
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .pendiente { color: #ff6b6b; }
+    .curso { color: #ffd93d; }
+    .finalizada { color: #6bcf6a; }
+    .history h3 {
+      color: #6a4fcf;
+    }
+    .feedback {
+      background: #f0eaff;
+      padding: 6px;
+      border-radius: 6px;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+    footer {
+    background: #6a4fcf;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+  }
+  </style>
+</head>
+<body>
+  <header>🔧 Jefe de Mecánicos</header>
+  <div class="content">
+    <h3>Tareas asignadas</h3>
+    <div id="lista"></div>
+
+    <div class="history">
+      <h3>Historial (últimas 3)</h3>
+      <div id="historial"></div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4mWo1zod9QAl81fauv6OPUFTKSJZ7pvbNoUEpU8HSybPg65no4TaqP-i11MezR4Pc3g/exec"; // pega aquí la URL del Apps Script publicado
+
+    let historial = [];
+
+    async function cargarTareas() {
+      const res = await fetch(SCRIPT_URL + "?tipo=jefe");
+      const tareas = await res.json();
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "";
+      tareas.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "task";
+        div.innerHTML = `
+          <h4>${t.titulo}</h4>
+          <p>${t.descripcion}</p>
+          <p class="estado ${t.estado}">Estado: ${t.estado}</p>
+          ${t.estado === "pendiente" ? `
+            <select id="mec-${t.id}">
+              <option value="">Asignar mecánico</option>
+              <option value="Juan Pérez">Juan Pérez</option>
+              <option value="Pedro Gómez">Pedro Gómez</option>
+              <option value="Luis Fernández">Luis Fernández</option>
+            </select>
+            <button onclick="asignarMecanico('${t.id}')">Asignar</button>
+          ` : ""}
+          ${t.estado === "en curso" ? `
+            <button onclick="finalizarTarea('${t.id}')">✅ Finalizar</button>
+          ` : ""}
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    async function asignarMecanico(id) {
+      const nombre = document.getElementById("mec-" + id).value;
+      if (!nombre) return;
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          tipo: "actualizar",
+          id,
+          estado: "en curso",
+          mecanico: nombre
+        })
+      });
+      cargarTareas();
+    }
+
+    async function finalizarTarea(id) {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          tipo: "actualizar",
+          id,
+          estado: "finalizada",
+          feedback: "👍 ¡Trabajo finalizado con precisión!"
+        })
+      });
+      // actualizar historial local
+      historial.unshift({id, feedback:"👍 ¡Trabajo finalizado con precisión!"});
+      if (historial.length > 3) historial.pop();
+      renderHistorial();
+      cargarTareas();
+    }
+
+    function renderHistorial() {
+      const cont = document.getElementById("historial");
+      cont.innerHTML = "";
+      historial.forEach(h => {
+        const div = document.createElement("div");
+        div.className = "task";
+        div.innerHTML = `
+          <h4>Tarea ${h.id}</h4>
+          <p class="estado finalizada">Estado: Finalizada</p>
+          <div class="feedback">Feedback: ${h.feedback}</div>
+        `;
+        cont.appendChild(div);
+      });
+    }
+
+    cargarTareas();
+    setInterval(cargarTareas, 1800000); // refresca cada 30 minutos
+  </script>
+    <footer>
+        JoulesBI Solutions © 2026
+    </footer>
+</body>
+</html>
