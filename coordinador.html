@@ -169,6 +169,11 @@ footer {
     </div>
 
     <script>
+      const rolGuardado = localStorage.getItem("rol");
+    if (rolGuardado !== "coordinador" || !rolGuardado) window.location.href = "index.html";
+    //if (rolGuardado === "jefe") window.location.href = "jefe.html";
+
+
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4mWo1zod9QAl81fauv6OPUFTKSJZ7pvbNoUEpU8HSybPg65no4TaqP-i11MezR4Pc3g/exec"; // pega aquí la URL del Apps Script publicado
         // crear tarea
         async function crearTarea() {
