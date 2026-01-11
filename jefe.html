@@ -92,7 +92,7 @@
 <body>
   
       <header style="display: flex;justify-content: space-between ;"> 
-        <span>🔧 Jefe de Mecánicos</span>
+        <span>🔧 Supervisor </span>
         <button class="btn logout" id="btnLogout">🚪 Cerrar sesión </button>
       </header>
 
@@ -131,7 +131,7 @@
               <option value="Pedro Gómez">Pedro Gómez</option>
               <option value="Luis Fernández">Luis Fernández</option>
             </select>
-            <button onclick="asignarMecanico('${t.id}')">Asignar</button>
+            <button id='${t.id}'  onclick="asignarMecanico('${t.id}')">Asignar</button>
           ` : ""}
           ${t.estado === "en curso" ? `
             <button onclick="finalizarTarea('${t.id}')">✅ Finalizar</button>
@@ -143,7 +143,10 @@
 
     async function asignarMecanico(id) {
       const nombre = document.getElementById("mec-" + id).value;
+      const btnAsignar=document.getElementById(id) ;
       if (!nombre) return;
+      btnAsignar.textContent='.....';
+      btnAsignar.disabled = true;
       await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({

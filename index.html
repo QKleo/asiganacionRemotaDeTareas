@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <!--link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon-180.png"-->
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Asignaciones</title>
   <style>
@@ -12,6 +16,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      flex-direction: column;
     }
     .login-box {
       background: #d9caff;
@@ -19,13 +24,16 @@
       border-radius: 16px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       width: 300px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
     }
     h2 {
-      text-align: center;
+      /*text-align: center;*/
       color: #6a4fcf;
     }
     input {
-      width: 100%;
+      width: 95%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 8px;
@@ -46,6 +54,12 @@
       text-align: center;
       font-size: 14px;
     }
+    footer {
+    background: #6a4fcf;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+  }
   </style>
 </head>
 <body>
@@ -56,6 +70,7 @@
     <button onclick="login()">Ingresar</button>
     <div class="error" id="error"></div>
   </div>
+
 
   <script>
     // Redirección automática si ya está logeado
@@ -75,6 +90,21 @@
         error.textContent = "Usuario o contraseña incorrectos";
       }
     }
+
+
+
+    if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    });
+  }
+
+
   </script>
+  <br> <br>
+  <footer>
+        JoulesBI Solutions © 2026
+    </footer>
 </body>
+
 </html>
